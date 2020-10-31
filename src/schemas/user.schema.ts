@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import { genderEnum } from 'src/enums/gender.enum';
 import { roleEnum } from 'src/enums/role.enum';
+import { statusEnum } from 'src/enums/status.enum';
 
 export const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, index: true },
@@ -14,4 +15,9 @@ export const UserSchema = new mongoose.Schema({
     description: { type: String, default: null, maxlength: 300 },
     phone: { type: String, default: null },
     role: { type: String, required: true, enum: Object.values(roleEnum) },
+    status: {
+        type: String,
+        enum: Object.values(statusEnum),
+        default: statusEnum.pending,
+    },
 });
