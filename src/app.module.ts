@@ -6,14 +6,16 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 @Module({
-  imports: [UserModule, AuthModule, 
-    ServeStaticModule.forRoot({
-    rootPath: join(__dirname, '..', 'frontend', 'dist'),
-    exclude: ['/api*'],
-  }),
-  MongooseModule.forRoot('mongodb://localhost/simple-chat', { useNewUrlParser: true })
-],
-  controllers: [],
-  providers: [],
+    imports: [
+        UserModule,
+        AuthModule,
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'frontend', 'dist'),
+            exclude: ['/api*'],
+        }),
+        MongooseModule.forRoot('mongodb://localhost/simple-chat', { useNewUrlParser: true }),
+    ],
+    controllers: [],
+    providers: [],
 })
 export class AppModule {}
