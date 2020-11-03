@@ -1,5 +1,7 @@
 <template>
-    <div class="auth-container"><router-view name="auth-router" /></div>
+    <div class="auth-container">
+        <div class="container"><router-view name="auth-router" /></div>
+    </div>
 </template>
 
 <script>
@@ -11,6 +13,10 @@ export default {
 <style lang="scss" scoped>
 .auth-container {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $basic-grey;
 }
 </style>
