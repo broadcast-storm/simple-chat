@@ -6,6 +6,8 @@ import * as _ from 'lodash';
 
 import { IUser } from 'src/interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CheckLoginDto } from 'src/auth/dto/check-login.dto';
+import { CheckEmailDto } from 'src/auth/dto/check-email.dto';
 
 @Injectable()
 export class UserService {
@@ -22,6 +24,14 @@ export class UserService {
             _.assignIn(createUserDto, { password: hash, role }),
         );
         return await createUser.save();
+    }
+
+    async isLoginAlreadyExisting(login: CheckLoginDto): Promise<IUser> {
+        return await this.userModel.findOne(login).exec();
+    }
+
+    async isEmailAlreadyExisting(email: CheckEmailDto): Promise<IUser> {
+        return await this.userModel.findOne(email).exec();
     }
 
     async find(id: string): Promise<IUser> {

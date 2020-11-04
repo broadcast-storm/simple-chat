@@ -10,8 +10,10 @@ export interface IUser extends Document {
     readonly name: string;
     readonly surname: string;
     readonly gender: string;
-    readonly age: number;
+    readonly birthday: Date;
     readonly description: string;
     readonly phone: string;
     readonly role: string;
+    isOnline: boolean;
+    lastTimeOnline: Date;
 }

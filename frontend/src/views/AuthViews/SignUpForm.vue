@@ -1,6 +1,6 @@
 <template>
     <div class="login-container pt-4 pb-4">
-        <b-form @submit="onSubmit">
+        <b-form v-if="!userCreated" @submit="onSubmit">
             <b-form-group label="Логин" label-for="login" class="mb-2">
                 <b-form-input
                     id="login"
@@ -173,8 +173,11 @@
                     <template v-if="!$v.form.password.required">
                         Это поле необходимо заполнить
                     </template>
-                    <template v-if="!$v.form.password.minLength">
-                        Пароль должен быть не менее 8 символов
+                    <template v-if="!$v.form.password.isPasswordSafe">
+                        длиной не менее 8 символов <br />
+                        не менее одной цифры 0-9<br />
+                        не менее одной буквы a-z <br />
+                        не менее одной буквы A-Z <br />
                     </template>
                 </small>
             </b-form-group>
@@ -205,11 +208,33 @@
                 </small>
             </b-form-group>
 
-            <b-button type="submit" variant="primary" block class="mt-4"
-                >Зарегистрироваться</b-button
-            >
+            <b-button type="submit" variant="primary" block class="mt-4">
+                <b-spinner
+                    v-if="isPending"
+                    label="Loading..."
+                    variant="light"
+                    small
+                ></b-spinner>
+                <template v-else>Зарегистрироваться</template>
+            </b-button>
         </b-form>
-        <b-row align-h="center" class="ml-0 mr-0 mt-5">
+        <b-row v-else align-h="center" class="ml-0 mr-0 mt-5">
+            <span>
+                Мы отправили на вашу почту
+                <strong>{{ form.email }}</strong> письмо для подтверждения
+                аккаунта</span
+            >
+            <b-button
+                variant="primary"
+                block
+                class="mt-4"
+                :to="routesList.authPage.children.signInPage"
+            >
+                Я подтвердил аккаунт
+            </b-button>
+        </b-row>
+
+        <b-row v-if="!userCreated" align-h="center" class="ml-0 mr-0 mt-5">
             <span
                 >Уже есть аккаунт?
                 <b-link :to="routesList.authPage.children.signInPage"
@@ -231,8 +256,13 @@ import {
     sameAs,
     helpers,
 } from 'vuelidate/lib/validators'
-import { isLoginAvailable, isEmailAvailable } from './customValidators'
+import {
+    isLoginAvailable,
+    isEmailAvailable,
+    isPasswordSafe,
+} from './customValidators'
 import moment from 'moment'
+import axios from 'axios'
 
 const alpha = helpers.regex('alpha', /^[a-zA-Zа-яА-Я]*$/)
 
@@ -265,54 +295,108 @@ export default {
                 password: '',
                 confirmPassword: '',
             },
+            emailExisting: () => true,
+            isValidEmail: false,
+            loginExisting: () => true,
+            isValidLogin: false,
+            isPending: false,
+            userCreated: false,
         }
     },
-    validations: {
-        form: {
-            login: {
-                required,
-                minLength: minLength(4),
-                maxLength: maxLength(12),
-                alphaNum,
-                isLoginAvailable,
-            },
-            name: {
-                required,
-                alpha,
-            },
-            surname: {
-                required,
-                alpha,
-            },
+    watch: {
+        'form.email': function () {
+            if (
+                this.$v.form.email.required &&
+                this.$v.form.email.email &&
+                !this.isValidEmail
+            ) {
+                this.emailExisting = isEmailAvailable
+                this.isValidEmail = true
+            }
 
-            email: {
-                required,
-                email,
-                isEmailAvailable,
-            },
+            if (
+                (!this.$v.form.email.required || !this.$v.form.email.email) &&
+                this.isValidEmail
+            ) {
+                this.emailExisting = () => true
+                this.isValidEmail = false
+            }
+        },
 
-            date: {
-                required,
-                validDate: (val) => moment(val, 'DD.MM.YYYY', true).isValid(),
-                maxValue: (val) =>
-                    moment(val, 'DD.MM.YYYY', true).toISOString() <
-                    new Date().toISOString(),
-            },
+        'form.login': function () {
+            if (
+                this.$v.form.login.required &&
+                this.$v.form.login.minLength &&
+                this.$v.form.login.maxLength &&
+                this.$v.form.login.alphaNum &&
+                !this.isValidLogin
+            ) {
+                this.loginExisting = isLoginAvailable
+                this.isValidLogin = true
+            }
 
-            gender: {
-                required,
-            },
-
-            password: {
-                required,
-                minLength: minLength(8),
-            },
-            confirmPassword: {
-                required,
-                sameAs: sameAs('password'),
-            },
+            if (
+                (!this.$v.form.login.required ||
+                    !this.$v.form.login.minLength ||
+                    !this.$v.form.login.maxLength ||
+                    !this.$v.form.login.alphaNum) &&
+                this.isValidLogin
+            ) {
+                this.loginExisting = () => true
+                this.isValidLogin = false
+            }
         },
     },
+    validations() {
+        return {
+            form: {
+                login: {
+                    required,
+                    minLength: minLength(4),
+                    maxLength: maxLength(12),
+                    alphaNum,
+                    isLoginAvailable: this.loginExisting,
+                },
+                name: {
+                    required,
+                    alpha,
+                },
+                surname: {
+                    required,
+                    alpha,
+                },
+
+                email: {
+                    required,
+                    email,
+                    isEmailAvailable: this.emailExisting,
+                },
+
+                date: {
+                    required,
+                    validDate: (val) =>
+                        moment(val, 'DD.MM.YYYY', true).isValid(),
+                    maxValue: (val) =>
+                        moment(val, 'DD.MM.YYYY', true).toISOString() <
+                        new Date().toISOString(),
+                },
+
+                gender: {
+                    required,
+                },
+
+                password: {
+                    required,
+                    isPasswordSafe,
+                },
+                confirmPassword: {
+                    required,
+                    sameAs: sameAs('password'),
+                },
+            },
+        }
+    },
+
     methods: {
         onSubmit(evt) {
             evt.preventDefault()
@@ -320,7 +404,7 @@ export default {
             if (this.$v.form.$anyError) {
                 return
             }
-            console.log(this.form)
+            this.signup()
         },
         onContext(ctx) {
             if (ctx.selectedFormatted !== 'No date selected')
@@ -329,6 +413,30 @@ export default {
         validateState(name) {
             const { $dirty, $error } = this.$v.form[name]
             return $dirty ? !$error : null
+        },
+        async signup() {
+            this.isPending = true
+            const birthday = moment(this.form.date, 'DD.MM.YYYY')
+                .toDate()
+                .toISOString()
+
+            const result = await axios.post('/api/auth/signUp', {
+                login: this.form.login,
+                email: this.form.email,
+                password: this.form.password,
+                name: this.form.name,
+                surname: this.form.surname,
+                gender: this.form.gender,
+                birthday: birthday,
+            })
+
+            this.isPending = false
+
+            console.log(result)
+
+            if (result.data === true) {
+                this.userCreated = true
+            }
         },
     },
 }

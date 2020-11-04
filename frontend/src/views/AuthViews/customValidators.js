@@ -1,35 +1,32 @@
-export const isLoginAvailable = (value) => {
+import axios from 'axios'
+
+export const isLoginAvailable = async (value) => {
     if (value === '') {
         return true
     }
-    const taken = ['username', 'matt', 'matthew']
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(!taken.includes(value))
-        }, 500)
+    const res = await axios.get('/api/auth/checkLogin', {
+        params: {
+            login: value,
+        },
     })
+    return !res.data.isExisting
 }
 
-export const isEmailAvailable = (value) => {
+export const isEmailAvailable = async (value) => {
     if (value === '') {
         return true
     }
-    const taken = ['example@mail.ru', 'example@gmail.com', 'example@yandex.ru']
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(!taken.includes(value))
-        }, 500)
+    const res = await axios.get('/api/auth/checkEmail', {
+        params: {
+            email: value,
+        },
     })
+    return !res.data.isExisting
 }
 
 export const isPasswordSafe = (value) => {
     if (value === '') {
         return true
     }
-    const taken = ['example@mail.ru', 'example@gmail.com', 'example@yandex.ru']
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(!taken.includes(value))
-        }, 500)
-    })
+    return /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(value)
 }

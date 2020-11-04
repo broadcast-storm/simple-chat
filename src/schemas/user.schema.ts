@@ -12,10 +12,12 @@ export const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     surname: { type: String, required: true },
     gender: { type: String, required: true, enum: Object.values(genderEnum) },
-    age: { type: Number, default: null },
+    birthday: { type: Date, required: true },
     description: { type: String, default: null, maxlength: 300 },
     phone: { type: String, default: null },
     role: { type: String, required: true, enum: Object.values(roleEnum) },
+    isOnline: { type: Boolean, default: false },
+    lastTimeOnline: { type: Date, default: new Date(Date.now()) },
     status: {
         type: String,
         enum: Object.values(statusEnum),

@@ -3,8 +3,8 @@ import {
     IsEmail,
     IsNotEmpty,
     IsString,
-    IsNumber,
     Matches,
+    IsDateString,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -18,10 +18,9 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    @Matches(
-        /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})/,
-        { message: 'Weak password. Try again' },
-    )
+    @Matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/, {
+        message: 'Weak password. Try again',
+    })
     @ApiProperty()
     readonly password: string;
 
@@ -44,10 +43,13 @@ export class CreateUserDto {
     readonly gender: string;
 
     @ApiProperty()
-    @IsNumber()
+    @IsDateString()
     @IsNotEmpty()
-    readonly age: number;
+    readonly birthday: Date;
+
     readonly description: string;
     readonly phone: string;
     readonly role: string;
+    readonly isOnline: boolean;
+    readonly lastTimeOnline: Date;
 }

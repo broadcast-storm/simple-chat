@@ -15,6 +15,8 @@ import { ConfigService } from '@nestjs/config';
 import { MailService } from 'src/mail/mail.service';
 import { IUser } from 'src/interfaces/user.interface';
 import { statusEnum } from 'src/enums/status.enum';
+import { CheckLoginDto } from './dto/check-login.dto';
+import { CheckEmailDto } from './dto/check-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +30,26 @@ export class AuthService {
         private readonly mailService: MailService,
     ) {
         this.clientAppUrl = this.configService.get<string>('FE_APP_URL');
+    }
+
+    async checkLoginExisting(
+        checkLoginDto: CheckLoginDto,
+    ): Promise<{ isExisting: boolean }> {
+        const user = await this.userService.isLoginAlreadyExisting(
+            checkLoginDto,
+        );
+        if (user) return { isExisting: true };
+        return { isExisting: false };
+    }
+
+    async checkEmailExisting(
+        checkEmailDto: CheckEmailDto,
+    ): Promise<{ isExisting: boolean }> {
+        const user = await this.userService.isEmailAlreadyExisting(
+            checkEmailDto,
+        );
+        if (user) return { isExisting: true };
+        return { isExisting: false };
     }
 
     async signUp(createUserDto: CreateUserDto): Promise<boolean> {
