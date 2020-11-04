@@ -73,7 +73,7 @@ export class AuthService {
             to: user.email,
             subject: 'Verify Account in Simple Chat',
             text: `
-                <h3>Hello ${user.firstName}! This message from Simple Chat Team</h3>
+                <h3>Hello ${user.name} ${user.surname}! This message from Simple Chat Team</h3>
                 <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
             `,
         });

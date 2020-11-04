@@ -2,12 +2,13 @@ import { Document } from 'mongoose';
 
 export interface IUser extends Document {
     readonly email: string;
+    readonly login: string;
     status: string;
     readonly password: string;
     readonly photo: string;
     readonly photoId: string;
-    readonly firstName: string;
-    readonly surName: string;
+    readonly name: string;
+    readonly surname: string;
     readonly gender: string;
     readonly age: number;
     readonly description: string;

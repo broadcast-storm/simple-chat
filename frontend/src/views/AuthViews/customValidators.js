@@ -21,3 +21,15 @@ export const isEmailAvailable = (value) => {
         }, 500)
     })
 }
+
+export const isPasswordSafe = (value) => {
+    if (value === '') {
+        return true
+    }
+    const taken = ['example@mail.ru', 'example@gmail.com', 'example@yandex.ru']
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(!taken.includes(value))
+        }, 500)
+    })
+}

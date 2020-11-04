@@ -5,11 +5,12 @@ import { statusEnum } from 'src/enums/status.enum';
 
 export const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, index: true },
+    login: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     photo: { type: String, default: null },
     photoId: { type: String, default: null },
-    firstName: { type: String, required: true },
-    surName: { type: String, required: true },
+    name: { type: String, required: true },
+    surname: { type: String, required: true },
     gender: { type: String, required: true, enum: Object.values(genderEnum) },
     age: { type: Number, default: null },
     description: { type: String, default: null, maxlength: 300 },
