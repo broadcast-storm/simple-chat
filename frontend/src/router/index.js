@@ -5,6 +5,7 @@ import SignInForm from '@/views/AuthViews/SignInForm'
 import SignUpForm from '@/views/AuthViews/SignUpForm'
 import ConfirmAccount from '@/views/AuthViews/ConfirmAccount'
 import ForgotPassword from '@/views/AuthViews/ForgotPassword'
+import ChangePassword from '@/views/AuthViews/ChangePassword'
 import routesList from '@/router/routesList'
 
 Vue.use(VueRouter)
@@ -49,6 +50,12 @@ const routes = [
                 path: routesList.authPage.children.forgotpasswordPage.path,
                 components: {
                     'auth-router': ForgotPassword,
+                },
+            },
+            {
+                path: routesList.authPage.children.changepasswordPage.path,
+                components: {
+                    'auth-router': ChangePassword,
                 },
             },
         ],

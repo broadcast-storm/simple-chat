@@ -1,6 +1,15 @@
 <template>
     <div class="login-container pt-4 pb-4">
         <b-form v-if="!userCreated" @submit="onSubmit">
+            <b-alert
+                variant="danger"
+                :show="dismissCountDown"
+                dismissible
+                fade
+                @dismissed="dismissCountDown = 0"
+                @dismiss-count-down="countDownChanged"
+                >Проверьте соединение с интернетом. <br
+            /></b-alert>
             <b-form-group label="Логин" label-for="login" class="mb-2">
                 <b-form-input
                     id="login"
@@ -295,6 +304,8 @@ export default {
                 password: '',
                 confirmPassword: '',
             },
+            dismissSecs: 3,
+            dismissCountDown: 0,
             emailExisting: () => true,
             isValidEmail: false,
             loginExisting: () => true,
@@ -406,6 +417,9 @@ export default {
             }
             this.signup()
         },
+        countDownChanged(dismissCountDown) {
+            this.dismissCountDown = dismissCountDown
+        },
         onContext(ctx) {
             if (ctx.selectedFormatted !== 'No date selected')
                 this.form.date = ctx.selectedFormatted
@@ -439,6 +453,8 @@ export default {
                 }
             } catch (error) {
                 console.log(error)
+                this.isPending = false
+                this.dismissCountDown = this.dismissSecs
             }
         },
     },

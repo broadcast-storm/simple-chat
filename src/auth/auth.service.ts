@@ -154,7 +154,7 @@ export class AuthService {
             throw new BadRequestException('Invalid email');
         }
         const token = await this.signUserToken(user);
-        const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
+        const forgotLink = `${this.clientAppUrl}/auth/change-password?token=${token}`;
 
         await this.mailService.send({
             from: this.configService.get<string>('CHAT_MAIL'),

@@ -24,6 +24,10 @@ const routesList = {
                 header: 'Забыл пароль',
                 path: '/auth/forgot-password',
             },
+            changepasswordPage: {
+                header: 'Восстановление пароля',
+                path: '/auth/change-password',
+            },
         },
     },
 }
