@@ -5,7 +5,9 @@ import {
     IsString,
     Matches,
     IsDateString,
+    IsEnum,
 } from 'class-validator';
+import { genderEnum } from 'src/enums/gender.enum';
 
 export class CreateUserDto {
     @ApiProperty()
@@ -40,6 +42,7 @@ export class CreateUserDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
+    @IsEnum(genderEnum)
     readonly gender: string;
 
     @ApiProperty()

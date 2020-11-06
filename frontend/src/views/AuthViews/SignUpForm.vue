@@ -419,23 +419,26 @@ export default {
             const birthday = moment(this.form.date, 'DD.MM.YYYY')
                 .toDate()
                 .toISOString()
+            try {
+                const result = await axios.post('/api/auth/signUp', {
+                    login: this.form.login,
+                    email: this.form.email,
+                    password: this.form.password,
+                    name: this.form.name,
+                    surname: this.form.surname,
+                    gender: this.form.gender,
+                    birthday: birthday,
+                })
 
-            const result = await axios.post('/api/auth/signUp', {
-                login: this.form.login,
-                email: this.form.email,
-                password: this.form.password,
-                name: this.form.name,
-                surname: this.form.surname,
-                gender: this.form.gender,
-                birthday: birthday,
-            })
+                this.isPending = false
 
-            this.isPending = false
+                console.log(result)
 
-            console.log(result)
-
-            if (result.data === true) {
-                this.userCreated = true
+                if (result.data === true) {
+                    this.userCreated = true
+                }
+            } catch (error) {
+                console.log(error)
             }
         },
     },

@@ -7,6 +7,7 @@ async function bootstrap() {
     app.setGlobalPrefix('api');
 
     const options = new DocumentBuilder()
+        .addBearerAuth()
         .setTitle('Simple-Chat')
         .setDescription('Api description')
         .setVersion('1.0')
