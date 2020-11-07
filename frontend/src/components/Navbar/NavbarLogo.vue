@@ -1,23 +1,20 @@
 <template>
-    <router-link class="logo mb-5" :to="routesList.mainPage.path">
+    <div class="logo">
         <LogoSvg class="logo__svg" />
-        <h1 class="logo__text">
+        <p class="logo__text">
             <span class="logo__text__first-letter">S</span>imple
             <span class="logo__text__first-letter">C</span>hat
-        </h1>
-    </router-link>
+        </p>
+    </div>
 </template>
 
 <script>
-import routesList from '@/router/routesList'
-import LogoSvg from '@/assets/icons/logo.svg'
+import LogoSvg from '@/assets/icons/logoNavbar.svg'
 export default {
-    name: 'AuthLogo',
+    name: 'NavbarLogo',
     components: { LogoSvg },
     data() {
-        return {
-            routesList,
-        }
+        return {}
     },
 }
 </script>
@@ -29,27 +26,17 @@ export default {
     justify-content: center;
     align-items: center;
     &__svg {
-        width: 45px;
+        width: 30px;
         color: $basic-blue !important;
     }
     &__text {
         font-weight: bold;
-        color: $basic-grey-dark;
+        color: $basic-grey;
         margin-bottom: 0;
         margin-left: 10px;
         &__first-letter {
             color: $basic-blue;
             font-weight: bold;
-        }
-    }
-}
-.logo:hover {
-    text-decoration: none;
-}
-@media (max-width: $media-breakpoint-xs) {
-    .logo {
-        &__text {
-            font-size: 2rem;
         }
     }
 }

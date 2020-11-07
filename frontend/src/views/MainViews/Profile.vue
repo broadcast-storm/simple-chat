@@ -1,11 +1,8 @@
 <template>
-    <div class="container">
-        Контент профиля
-        <b-alert show
-            >Test bootsrtap
-            <b-icon icon="exclamation-circle-fill" variant="success"></b-icon
-        ></b-alert>
-    </div>
+    <b-alert show
+        >Test bootsrtap
+        <b-icon icon="exclamation-circle-fill" variant="success"></b-icon
+    ></b-alert>
 </template>
 
 <script>
