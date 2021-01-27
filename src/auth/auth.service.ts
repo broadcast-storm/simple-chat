@@ -160,7 +160,7 @@ export class AuthService {
             from: this.configService.get<string>('CHAT_MAIL'),
             to: user.email,
             subject: 'Восстановление пароля в Simple Chat',
-            text: `
+            html: `
                 <h3>Здравствуйте, ${user.name} ${user.surname}! Это сообщение от команды разработчиков Simple Chat</h3>
                 <p>Если вы запрашивали восстановление пароля, то перейдите по  <a href="${forgotLink}">этой ссылке</a></p>
             `,
@@ -213,7 +213,7 @@ export class AuthService {
             from: this.configService.get<string>('CHAT_MAIL'),
             to: user.email,
             subject: 'Подтверждение аккаунта в Simple Chat',
-            text: `
+            html: `
                 <h3>Здравствуйте, ${user.name} ${user.surname}! Это сообщение от команды разработчиков Simple Chat</h3>
                 <p>Пожалуйста, перейдите по  <a href="${confirmLink}">этой ссылке</a>, чтобы активировать свой аккаунт.</p>
             `,
