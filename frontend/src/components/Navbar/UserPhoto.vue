@@ -10,7 +10,7 @@
         </b-img>
         <b-popover target="user-photo" triggers="click blur" placement="bottom">
             <template #title>Никита Позд</template>
-            Example
+            <span>Выйти</span>
         </b-popover>
     </div>
 </template>

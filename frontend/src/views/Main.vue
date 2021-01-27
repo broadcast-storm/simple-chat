@@ -2,7 +2,7 @@
     <div class="main-container pt-5">
         <LoadingOverlay :show-overlay="showOverlay" />
         <Navbar />
-        <b-container class="main-container__content" fluid="lg">
+        <b-container class="main-container__content px-0 pt-2" fluid="lg">
             <router-view name="main-router" />
         </b-container>
     </div>
