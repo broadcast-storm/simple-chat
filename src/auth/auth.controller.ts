@@ -51,6 +51,14 @@ export class AuthController {
         return await this.authService.signIn(signInDto);
     }
 
+    // SIGN IN BY TOKEN
+    @Get('/signInByToken')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    async signInByToken(@GetUser() user: IUser): Promise<IReadableUser> {
+        return await this.authService.signInByToken(user._id);
+    }
+
     // CONFIRM ACCOUNT (BY LINK FROM EMAIL MESSAGE)
     @Get('/confirm')
     async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto) {

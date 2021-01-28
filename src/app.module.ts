@@ -9,11 +9,12 @@ import { AuthModule } from './auth/auth.module';
 import { configModule } from './config.root';
 import { TokenModule } from './token/token.module';
 import { MailModule } from './mail/mail.module';
+import { MessagesGateway } from './gateways/messages.gateway';
+import { ChatModule } from './chat/chat.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
     imports: [
-        UserModule,
-        AuthModule,
         configModule,
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'frontend', 'dist'),
@@ -24,10 +25,14 @@ import { MailModule } from './mail/mail.module';
             useNewUrlParser: true,
             useUnifiedTopology: true,
         }),
+        UserModule,
+        AuthModule,
         TokenModule,
         MailModule,
+        ChatModule,
+        MessageModule,
     ],
     controllers: [],
-    providers: [],
+    providers: [MessagesGateway],
 })
 export class AppModule {}

@@ -93,7 +93,7 @@ export class AuthService {
 
     // SIGN IN USER
     async signIn({ email, password }: SignInDto): Promise<IReadableUser> {
-        const user = await await this.userService.findUserByEmail(email);
+        const user = await this.userService.findUserByEmail(email);
 
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = await this.signUserToken(user);
@@ -107,6 +107,20 @@ export class AuthService {
             ) as IReadableUser;
         }
         throw new BadRequestException('Invalid credentials');
+    }
+
+    // SIGN IN BY TOKEN
+    async signInByToken(userId: string): Promise<IReadableUser> {
+        const user = await this.userService.findUserById(userId);
+        if (user) {
+            const readableUser = user.toObject() as IReadableUser;
+
+            return _.omit<any>(
+                readableUser,
+                Object.values(userSensitiveFieldsEnum),
+            ) as IReadableUser;
+        }
+        throw new BadRequestException('Invalid token');
     }
 
     // CHECK LOGIN EXISTING DURING REGISTRATION (LOGIN INPUT)

@@ -1,63 +1,89 @@
 <template>
-    <b-card class="comp-container" no-body>
-        <b-card-header class="py-0 opened-header">
-            <div>
-                <b-avatar size="45px"></b-avatar>
-                <span class="pl-2">Имя Фамилия</span>
-            </div>
-            <b-dropdown
-                right
-                no-caret
-                variant="link"
-                toggle-class="text-decoration-none"
-            >
-                <template #button-content>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </template>
-                <b-dropdown-item href="#">Удалить чат</b-dropdown-item>
-                <b-dropdown-item href="#">Заблокировать</b-dropdown-item>
-            </b-dropdown>
-        </b-card-header>
-        <div class="messages-list">
-            <div class="yours messages">
-                <div class="message last">
-                    <span class="text">Hello, how's it going?</span>
-                    <span class="time">15:30</span>
+    <b-card
+        class="comp-container"
+        :class="{ 'no-chat': getOpenedChatId === null }"
+        no-body
+    >
+        <template v-if="getOpenedChatId !== null">
+            <b-card-header class="py-0 opened-header">
+                <div>
+                    <button class="back-btn" @click="changeChatId(null)">
+                        <LeftArrowSvg class="back-btn__img" />
+                    </button>
+                    <b-avatar size="45px"></b-avatar>
+                    <span class="pl-2">Имя Фамилия</span>
+                </div>
+                <b-dropdown
+                    right
+                    no-caret
+                    variant="link"
+                    toggle-class="text-decoration-none"
+                >
+                    <template #button-content>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </template>
+                    <b-dropdown-item href="#">Удалить чат</b-dropdown-item>
+                    <b-dropdown-item href="#">Заблокировать</b-dropdown-item>
+                </b-dropdown>
+            </b-card-header>
+            <div class="messages-list">
+                <div class="yours messages">
+                    <div class="message last">
+                        <span class="text">Hello, how's it going?</span>
+                        <span class="time">15:30</span>
+                    </div>
+                </div>
+                <div class="mine messages">
+                    <div class="message last">
+                        <span class="text">
+                            How about you? How about you? How about you? How
+                            about you? How about you?
+                        </span>
+                        <span class="time">15:39</span>
+                    </div>
                 </div>
             </div>
-            <div class="mine messages">
-                <div class="message last">
-                    <span class="text">
-                        How about you? How about you? How about you? How about
-                        you? How about you?
-                    </span>
-                    <span class="time">15:39</span>
-                </div>
-            </div>
+            <b-form class="message-form">
+                <b-form-textarea
+                    size="sm"
+                    placeholder="Написать сообщение..."
+                    max-rows="8"
+                    class="message-form__input"
+                ></b-form-textarea>
+                <button class="message-form__btn">
+                    <b-img alt="Отправить" :src="defaultImg" class="img">
+                    </b-img>
+                </button>
+            </b-form>
+        </template>
+        <div v-else class="no-chat">
+            <NoChatSvg class="no-chat__img" />
+            <span>Выберите чат</span>
         </div>
-        <b-form class="message-form">
-            <b-form-textarea
-                size="sm"
-                placeholder="Написать сообщение..."
-                max-rows="8"
-                class="message-form__input"
-            ></b-form-textarea>
-            <button class="message-form__btn">
-                <b-img alt="Отправить" :src="defaultImg" class="img"> </b-img>
-            </button>
-        </b-form>
     </b-card>
 </template>
 
 <script>
+import { mapMutations, mapGetters } from 'vuex'
+import { OPENED_CHAT_ID_CHANGE } from '@/store/action-types/app-params'
+import LeftArrowSvg from '@/assets/icons/left-arrow.svg'
+import NoChatSvg from '@/assets/icons/chat.svg'
+
 export default {
     name: 'OpenedChat',
+    components: { LeftArrowSvg, NoChatSvg },
     data() {
         return {
             defaultImg: require('@/assets/images/send.png'),
         }
+    },
+    computed: {
+        ...mapGetters('appParams', ['getOpenedChatId']),
+    },
+    methods: {
+        ...mapMutations('appParams', { changeChatId: OPENED_CHAT_ID_CHANGE }),
     },
 }
 </script>
@@ -76,6 +102,16 @@ export default {
         justify-content: space-between;
         align-items: center;
         flex-shrink: 0;
+
+        .back-btn {
+            border: none;
+            background-color: transparent;
+            margin-right: 5px;
+            display: none;
+            &__img {
+                width: 30px;
+            }
+        }
 
         .dot {
             width: 5px;
@@ -208,6 +244,30 @@ export default {
             background-color: transparent;
             .img {
                 width: 25px;
+            }
+        }
+    }
+}
+
+.no-chat {
+    justify-content: center;
+    align-items: center;
+    .no-chat {
+        display: flex;
+        flex-direction: column;
+        color: $basic-grey-dark;
+        &__img {
+            width: 50px;
+        }
+    }
+}
+@media (max-width: 768px) {
+    .comp-container {
+        .opened-header {
+            padding-left: 5px;
+            padding-right: 5px;
+            .back-btn {
+                display: inline-block;
             }
         }
     }
