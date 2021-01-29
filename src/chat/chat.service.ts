@@ -5,15 +5,22 @@ import * as _ from 'lodash';
 
 // INTERFACES
 import { IChat } from 'src/interfaces/chat.interface';
-import { sendNewMessageDto } from 'src/message/dto/send-new-message.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { MessageService } from 'src/message/message.service';
 import { IMessage } from 'src/interfaces/message.interface';
+import { newMessageDto } from './dto/new-message.dto';
+import { IChatInfo } from 'src/interfaces/chatInfo.interface';
+import { UserService } from 'src/user/user.service';
+import { userSensitiveFieldsForChatEnum } from 'src/enums/protected-fields-for-chat.enum';
+import { IUserForChat } from 'src/interfaces/userForChat.interface';
+import { IUser } from 'src/interfaces/user.interface';
+import { getMessagesDto } from './dto/get-messages.dto';
 
 @Injectable()
 export class ChatService {
     constructor(
         private readonly messageService: MessageService,
+        private readonly userService: UserService,
         @InjectModel('Chat') private readonly chatModel: Model<IChat>,
     ) {}
     async createNewChat(
@@ -56,5 +63,77 @@ export class ChatService {
         } catch (error) {
             throw new BadRequestException(error);
         }
+    }
+
+    async sendMessage(
+        messageDto: newMessageDto,
+        userId: string,
+    ): Promise<{ chatUpdate: IChat; messageUpdate: IMessage }> {
+        try {
+            const chat = await this.chatModel
+                .findById(messageDto.chatId)
+                .exec();
+            if (chat) {
+                for (let i = 0; i < chat.userHasRead.length; i++) {
+                    if (chat.userHasRead[i].userId != userId)
+                        chat.userHasRead[i].unread_count += 1;
+                }
+
+                const chatInfoResult = await this.chatModel.findByIdAndUpdate(
+                    { _id: messageDto.chatId },
+                    {
+                        last_message: messageDto.text.slice(0, 30),
+                        last_message_date: new Date(Date.now()),
+                        userHasRead: chat.userHasRead,
+                    },
+                );
+
+                const newMessageResult = await this.messageService.sendNewMessage(
+                    {
+                        chatId: messageDto.chatId as any,
+                        userId: userId as any,
+                        text: messageDto.text,
+                    },
+                );
+                return {
+                    chatUpdate: chatInfoResult,
+                    messageUpdate: newMessageResult,
+                };
+            } else {
+                throw new BadRequestException({
+                    message: `Chat doesn't exist`,
+                });
+            }
+        } catch (error) {
+            throw new BadRequestException(error);
+        }
+    }
+
+    async getChatList(currentUserId: string): Promise<Array<IChatInfo>> {
+        const usersChats = await this.chatModel
+            .find({ users: currentUserId })
+            .exec();
+        return await Promise.all(
+            usersChats.map(async (chat) => {
+                const fullUsersInfo = await this.userService.findManyUsersByIds(
+                    chat.users as any,
+                );
+                const clearUsersInfo = fullUsersInfo.map((user) => {
+                    return _.omit<any>(
+                        user.toObject() as IUser,
+                        Object.values(userSensitiveFieldsForChatEnum),
+                    ) as IUserForChat;
+                });
+                const resChat: any = {
+                    ...(chat.toObject() as IChat),
+                    users: clearUsersInfo,
+                };
+                return resChat;
+            }),
+        );
+    }
+
+    async getChatMessages(chatId: string): Promise<IMessage[]> {
+        return await this.messageService.getAllChatMessages(chatId);
     }
 }

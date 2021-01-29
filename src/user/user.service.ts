@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 
@@ -62,5 +62,14 @@ export class UserService {
     // FIND USER BY EMAIL
     async findUserByEmail(email: string): Promise<IUser> {
         return await this.userModel.findOne({ email }).exec();
+    }
+
+    // FIND USER BY EMAIL
+    async findManyUsersByIds(userIds: Types.ObjectId[]): Promise<Array<IUser>> {
+        return await this.userModel
+            .find({
+                _id: { $in: userIds },
+            })
+            .exec();
     }
 }
