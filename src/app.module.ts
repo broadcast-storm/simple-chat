@@ -24,6 +24,7 @@ import { MessageModule } from './message/message.module';
             useCreateIndex: true,
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            useFindAndModify: false,
         }),
         UserModule,
         AuthModule,

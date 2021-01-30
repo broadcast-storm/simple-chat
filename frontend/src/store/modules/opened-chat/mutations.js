@@ -3,6 +3,7 @@ import {
     CLEAR_OPENED_CHAT,
     OPENED_CHAT_ID_CHANGE,
     OPENED_CHAT_USER_CHANGE,
+    SEND_MESSAGE_SUCCESS,
 } from '@/store/action-types/opened-chat'
 
 const mutations = {
@@ -21,6 +22,7 @@ const mutations = {
         state.userInfo = null
         state.isLoading = true
     },
+    [SEND_MESSAGE_SUCCESS]: () => {},
 }
 
 export default mutations

@@ -59,16 +59,28 @@
                     class="ml-2"
                 ></b-spinner>
             </div>
-            <b-form class="message-form">
+            <b-form class="message-form" @submit="onSubmit">
                 <b-form-textarea
+                    v-model="newMessageText"
                     size="sm"
                     placeholder="Написать сообщение..."
                     max-rows="8"
                     class="message-form__input"
                 ></b-form-textarea>
-                <button class="message-form__btn">
-                    <b-img alt="Отправить" :src="defaultImg" class="img">
+                <button class="message-form__btn" type="submit">
+                    <b-img
+                        v-if="!isSendingMessage"
+                        alt="Отправить"
+                        :src="defaultImg"
+                        class="img"
+                    >
                     </b-img>
+                    <b-spinner
+                        v-else
+                        label="Spinning"
+                        variant="primary"
+                        small
+                    ></b-spinner>
                 </button>
             </b-form>
         </template>
@@ -80,10 +92,11 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import {
     CLEAR_OPENED_CHAT,
     OPENED_CHAT_ID_CHANGE,
+    SEND_MESSAGE,
 } from '@/store/action-types/opened-chat'
 import LeftArrowSvg from '@/assets/icons/left-arrow.svg'
 import NoChatSvg from '@/assets/icons/chat.svg'
@@ -95,6 +108,8 @@ export default {
         return {
             defaultImg: require('@/assets/images/send.png'),
             name: '',
+            newMessageText: '',
+            isSendingMessage: false,
         }
     },
     computed: {
@@ -111,7 +126,26 @@ export default {
         ...mapMutations('openedChat', {
             clearMessages: CLEAR_OPENED_CHAT,
             changeChatId: OPENED_CHAT_ID_CHANGE,
+            sendMessage: SEND_MESSAGE,
         }),
+        ...mapActions('openedChat', [SEND_MESSAGE]),
+        async onSubmit(evt) {
+            evt.preventDefault()
+            try {
+                if (this.newMessageText !== '' && !this.isSendingMessage) {
+                    this.isSendingMessage = true
+                    await this.SEND_MESSAGE({
+                        text: this.newMessageText,
+                        chatId: this.getOpenedChatId,
+                    })
+                    this.isSendingMessage = false
+                    this.newMessageText = ''
+                }
+            } catch (error) {
+                console.log(error)
+                this.isSendingMessage = false
+            }
+        },
         closeOpenedChat() {
             this.clearMessages()
             this.changeChatId(null)
@@ -234,6 +268,7 @@ export default {
         justify-content: flex-end;
 
         .message {
+            min-width: 150px;
             max-width: 80%;
             border-radius: 20px;
             padding: 8px 15px;
@@ -250,6 +285,7 @@ export default {
         .yours {
             background-color: #eee;
             position: relative;
+            margin-right: auto;
         }
 
         .yours.last:before {
