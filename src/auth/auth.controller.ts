@@ -29,6 +29,7 @@ import { IUser } from 'src/interfaces/user.interface';
 
 // DECORATORS
 import { GetUser } from 'src/decorators/get-user.decorator';
+import { LogoutDto } from './dto/logout.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -54,7 +55,7 @@ export class AuthController {
     // SIGN IN BY TOKEN
     @Get('/signInByToken')
     @ApiBearerAuth()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard())
     async signInByToken(@GetUser() user: IUser): Promise<IReadableUser> {
         return await this.authService.signInByToken(user._id);
     }
@@ -91,11 +92,31 @@ export class AuthController {
     // CHANGE PASSWORD BY LINK FROM EMAIL
     @Patch('/changePassword')
     @ApiBearerAuth()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard())
     async changePassword(
         @GetUser() user: IUser,
         @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
     ): Promise<boolean> {
         return this.authService.changePassword(user._id, changePasswordDto);
+    }
+
+    // LOGOUT AND DELETE TOKEN
+    @Get('/logout')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
+    async logout(
+        @GetUser() user: IUser,
+        @Query(new ValidationPipe()) query: LogoutDto,
+    ): Promise<{ ok?: number; n?: number }> {
+        return this.authService.logout(user._id, query.token);
+    }
+    // LOGOUT AND DELETE ALL ONE USER'S TOKENS
+    @Get('/logout-all-devices')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
+    async logoutAllDevices(
+        @GetUser() user: IUser,
+    ): Promise<{ ok?: number; n?: number }> {
+        return this.authService.logoutAll(user._id);
     }
 }

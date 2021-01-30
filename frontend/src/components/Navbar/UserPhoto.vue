@@ -12,13 +12,15 @@
             <template #title>{{
                 getUserMainInfo.name + ' ' + getUserMainInfo.surname
             }}</template>
-            <span>Выйти</span>
+            <span class="logout" @click="logout()">Выйти</span>
         </b-popover>
     </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import routesList from '@/router/routesList'
+import { AUTH_LOGOUT } from '@/store/action-types/user-info'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'UserPhoto',
@@ -38,11 +40,26 @@ export default {
     computed: {
         ...mapGetters('userInfo', ['getUserMainInfo']),
     },
+    methods: {
+        ...mapActions('userInfo', [AUTH_LOGOUT]),
+        async logout() {
+            try {
+                await this.AUTH_LOGOUT()
+                this.$router.push(routesList.authPage.children.signInPage)
+            } catch (error) {
+                console.log(error)
+            }
+        },
+    },
 }
 </script>
 
 <style lang="scss" scoped>
 .user-image {
+    cursor: pointer;
+}
+.logout:hover {
+    color: red;
     cursor: pointer;
 }
 </style>

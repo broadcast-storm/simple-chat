@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import routesList from '@/router/routesList'
 import { mapMutations } from 'vuex'
 import { WINDOW_WIDTH_UPDATE } from '@/store/action-types/app-params'
 
@@ -18,6 +19,9 @@ export default {
         this.$nextTick(() => {
             window.addEventListener('resize', this.onResize)
         })
+        if (localStorage.getItem('token')) {
+            this.$router.push(routesList.mainPage.path)
+        }
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)

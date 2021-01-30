@@ -1,6 +1,7 @@
 import {
     AUTH_SUCCESS,
     FIRST_AUTH_REQUEST_SUCCESS,
+    AUTH_LOGOUT_SUCCESS,
 } from '@/store/action-types/user-info'
 
 const mutations = {
@@ -43,6 +44,10 @@ const mutations = {
             status: userData.status,
         }
         state.isAuthentificated = true
+    },
+    [AUTH_LOGOUT_SUCCESS]: (state) => {
+        state.userInfo = null
+        state.isAuthentificated = false
     },
 }
 

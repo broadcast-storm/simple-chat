@@ -109,6 +109,19 @@ export class AuthService {
         throw new BadRequestException('Invalid credentials');
     }
 
+    // LOGOUT USER
+    async logout(
+        userId: string,
+        token: string,
+    ): Promise<{ ok?: number; n?: number }> {
+        return await this.tokenService.delete(userId, token);
+    }
+
+    // LOGOUT USER FROM ALL DEVICES
+    async logoutAll(userId: string): Promise<{ ok?: number; n?: number }> {
+        return await this.tokenService.deleteAll(userId);
+    }
+
     // SIGN IN BY TOKEN
     async signInByToken(userId: string): Promise<IReadableUser> {
         const user = await this.userService.findUserById(userId);
