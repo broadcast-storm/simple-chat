@@ -263,13 +263,13 @@ export default {
         padding: 30px 10px 0px 10px;
         box-sizing: border-box;
         overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
+        // display: flex;
+        // flex-direction: column;
+        // justify-content: flex-end;
 
         .message {
             min-width: 150px;
-            max-width: 80%;
+            max-width: 70%;
             border-radius: 20px;
             padding: 8px 15px;
             margin-top: 5px;

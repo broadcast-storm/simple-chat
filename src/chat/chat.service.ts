@@ -39,13 +39,14 @@ export class ChatService {
                         (createChatDto.users[i] as any) === userId ? 0 : 1,
                 });
             }
+            const time = new Date(Date.now());
             if (!isAlreadyExists) {
                 const createdChat = await new this.chatModel(
                     _.assignIn(createChatDto, {
                         userIsTyping: [],
                         userHasRead: userHasRead,
                         last_message: createChatDto.text.slice(0, 30),
-                        last_message_date: new Date(Date.now()),
+                        last_message_date: time,
                     }),
                 ).save();
                 return await this.messageService.sendNewMessage(
@@ -53,6 +54,7 @@ export class ChatService {
                         chatId: createdChat._id,
                         userId: userId as any,
                         text: createChatDto.text,
+                        date: time,
                     }),
                 );
             } else {
@@ -79,11 +81,13 @@ export class ChatService {
                         chat.userHasRead[i].unread_count += 1;
                 }
 
+                const time = new Date(Date.now());
+
                 const chatInfoResult = await this.chatModel.findByIdAndUpdate(
                     { _id: messageDto.chatId },
                     {
                         last_message: messageDto.text.slice(0, 30),
-                        last_message_date: new Date(Date.now()),
+                        last_message_date: time,
                         userHasRead: chat.userHasRead,
                     },
                 );
@@ -93,6 +97,7 @@ export class ChatService {
                         chatId: messageDto.chatId as any,
                         userId: userId as any,
                         text: messageDto.text,
+                        date: time,
                     },
                 );
                 return {

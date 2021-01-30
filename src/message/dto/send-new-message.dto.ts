@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsDateString } from 'class-validator';
 import * as mongoose from 'mongoose';
 
 export class sendNewMessageDto {
@@ -10,4 +10,7 @@ export class sendNewMessageDto {
 
     @IsString()
     userId: mongoose.Types.ObjectId;
+
+    @IsDateString()
+    date: Date;
 }
