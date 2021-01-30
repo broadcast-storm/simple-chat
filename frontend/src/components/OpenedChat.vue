@@ -11,7 +11,7 @@
                         <LeftArrowSvg class="back-btn__img" />
                     </button>
                     <b-avatar size="45px"></b-avatar>
-                    <span class="pl-2">Имя Фамилия</span>
+                    <span class="pl-2">{{ getUserName() }}</span>
                 </div>
                 <b-dropdown
                     right
@@ -46,7 +46,9 @@
                         }"
                     >
                         <span class="text">{{ message.text }}</span>
-                        <span class="time">15:30</span>
+                        <span class="time">{{
+                            getMessageTime(message.date)
+                        }}</span>
                     </div>
                 </template>
                 <b-spinner
@@ -79,8 +81,10 @@
 
 <script>
 import { mapMutations, mapGetters } from 'vuex'
-import { OPENED_CHAT_ID_CHANGE } from '@/store/action-types/app-params'
-import { CLEAR_OPENED_CHAT } from '@/store/action-types/opened-chat'
+import {
+    CLEAR_OPENED_CHAT,
+    OPENED_CHAT_ID_CHANGE,
+} from '@/store/action-types/opened-chat'
 import LeftArrowSvg from '@/assets/icons/left-arrow.svg'
 import NoChatSvg from '@/assets/icons/chat.svg'
 
@@ -90,16 +94,24 @@ export default {
     data() {
         return {
             defaultImg: require('@/assets/images/send.png'),
+            name: '',
         }
     },
     computed: {
         ...mapGetters('userInfo', ['getUserMainInfo']),
-        ...mapGetters('appParams', ['getOpenedChatId']),
-        ...mapGetters('openedChat', ['getMessagesList', 'isOpenedChatLoading']),
+        ...mapGetters('chatList', ['getChatList']),
+        ...mapGetters('openedChat', [
+            'getMessagesList',
+            'isOpenedChatLoading',
+            'getOpenedChatId',
+            'getOpenedChatUserInfo',
+        ]),
     },
     methods: {
-        ...mapMutations('appParams', { changeChatId: OPENED_CHAT_ID_CHANGE }),
-        ...mapMutations('openedChat', { clearMessages: CLEAR_OPENED_CHAT }),
+        ...mapMutations('openedChat', {
+            clearMessages: CLEAR_OPENED_CHAT,
+            changeChatId: OPENED_CHAT_ID_CHANGE,
+        }),
         closeOpenedChat() {
             this.clearMessages()
             this.changeChatId(null)
@@ -115,6 +127,59 @@ export default {
                 )
             } else {
                 return true
+            }
+        },
+        getUserName() {
+            return (
+                this.getOpenedChatUserInfo.name +
+                ' ' +
+                this.getOpenedChatUserInfo.surname
+            )
+        },
+        getMessageTime(time) {
+            const msgDate = new Date(time)
+            const today = new Date()
+            if (
+                msgDate.getDate() === today.getDate() &&
+                msgDate.getMonth() === today.getMonth() &&
+                msgDate.getFullYear() === today.getFullYear()
+            ) {
+                return (
+                    (msgDate.getHours() < 10
+                        ? '0' + msgDate.getHours()
+                        : msgDate.getHours()) +
+                    ':' +
+                    (msgDate.getMinutes() < 10
+                        ? '0' + msgDate.getMinutes()
+                        : msgDate.getMinutes())
+                )
+            } else {
+                return (
+                    msgDate.getDate() +
+                    ' ' +
+                    [
+                        'янв',
+                        'фев',
+                        'мар',
+                        'апр',
+                        'мая',
+                        'июн',
+                        'июл',
+                        'авг',
+                        'сен',
+                        'окт',
+                        'ноя',
+                        'дек',
+                    ][msgDate.getMonth()] +
+                    ' ' +
+                    ((msgDate.getHours() < 10
+                        ? '0' + msgDate.getHours()
+                        : msgDate.getHours()) +
+                        ':' +
+                        (msgDate.getMinutes() < 10
+                            ? '0' + msgDate.getMinutes()
+                            : msgDate.getMinutes()))
+                )
             }
         },
     },

@@ -19,7 +19,7 @@
                     :key="chat.id"
                     class="d-flex justify-content-between align-items-start chat-item px-2"
                     button
-                    @click="changeChatId(chat._id)"
+                    @click="selectChat(chat)"
                 >
                     <div class="chat-item__info">
                         <b-avatar size="40px"></b-avatar>
@@ -62,7 +62,10 @@
 </template>
 
 <script>
-import { OPENED_CHAT_ID_CHANGE } from '@/store/action-types/app-params'
+import {
+    OPENED_CHAT_ID_CHANGE,
+    OPENED_CHAT_USER_CHANGE,
+} from '@/store/action-types/opened-chat'
 import { mapMutations, mapGetters } from 'vuex'
 
 export default {
@@ -72,7 +75,10 @@ export default {
         ...mapGetters('userInfo', ['getUserMainInfo']),
     },
     methods: {
-        ...mapMutations('appParams', { changeChatId: OPENED_CHAT_ID_CHANGE }),
+        ...mapMutations('openedChat', {
+            changeUserInfoForOpenedChat: OPENED_CHAT_USER_CHANGE,
+            changeChatId: OPENED_CHAT_ID_CHANGE,
+        }),
         getUserName(chat) {
             const user = chat.users.find(
                 (user) => user._id !== this.getUserMainInfo._id
@@ -85,6 +91,12 @@ export default {
                 (user) => user.userId === this.getUserMainInfo._id
             )
             return user.unread_count
+        },
+        selectChat(chat) {
+            this.changeChatId(chat._id)
+            this.changeUserInfoForOpenedChat(
+                chat.users.find((user) => user._id !== this.getUserMainInfo._id)
+            )
         },
         getTimeOfLastMessage(time) {
             const msgDate = new Date(time)

@@ -22,8 +22,8 @@ export default {
     components: { ChatList, OpenedChat },
     props: {},
     computed: {
-        ...mapGetters('appParams', ['getWindowWidth', 'getOpenedChatId']),
-        ...mapGetters('appParams', ['getOpenedChatId']),
+        ...mapGetters('appParams', ['getWindowWidth']),
+        ...mapGetters('openedChat', ['getOpenedChatId']),
     },
     watch: {
         getOpenedChatId: async function (chatId) {

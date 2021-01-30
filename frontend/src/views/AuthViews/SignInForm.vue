@@ -128,9 +128,7 @@ export default {
 
                 this.isPending = false
 
-                setTimeout(() => {
-                    this.$router.push(routesList.mainPage.path)
-                }, 500)
+                this.$router.push(routesList.mainPage.path)
             } catch (error) {
                 this.isPending = false
                 this.dismissCountDown = this.dismissSecs
