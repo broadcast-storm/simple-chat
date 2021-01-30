@@ -12,14 +12,19 @@
             <template #title>{{
                 getUserMainInfo.name + ' ' + getUserMainInfo.surname
             }}</template>
-            <span class="logout" @click="logout()">Выйти</span>
+            <p class="logout" @click="logout()">Выйти</p>
+            <p class="logout" @click="logoutAll()">Выйти со всех устройств</p>
         </b-popover>
     </div>
 </template>
 
 <script>
 import routesList from '@/router/routesList'
-import { AUTH_LOGOUT } from '@/store/action-types/user-info'
+import {
+    AUTH_LOGOUT,
+    CLEAR_ALL,
+    AUTH_LOGOUT_ALL_DEVICES,
+} from '@/store/action-types/user-info'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -41,11 +46,27 @@ export default {
         ...mapGetters('userInfo', ['getUserMainInfo']),
     },
     methods: {
-        ...mapActions('userInfo', [AUTH_LOGOUT]),
+        ...mapActions('userInfo', [
+            AUTH_LOGOUT,
+            CLEAR_ALL,
+            AUTH_LOGOUT_ALL_DEVICES,
+        ]),
         async logout() {
             try {
                 await this.AUTH_LOGOUT()
-                this.$router.push(routesList.authPage.children.signInPage)
+                this.$router.push(routesList.authPage.children.signInPage, () =>
+                    this.CLEAR_ALL()
+                )
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async logoutAll() {
+            try {
+                await this.AUTH_LOGOUT_ALL_DEVICES()
+                this.$router.push(routesList.authPage.children.signInPage, () =>
+                    this.CLEAR_ALL()
+                )
             } catch (error) {
                 console.log(error)
             }

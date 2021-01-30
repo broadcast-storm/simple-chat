@@ -7,7 +7,11 @@ import {
     FIRST_AUTH_REQUEST_SUCCESS,
     AUTH_LOGOUT_SUCCESS,
     CLEAR_ALL,
+    AUTH_LOGOUT_ALL_DEVICES,
 } from '@/store/action-types/user-info'
+
+import { CLEAR_OPENED_CHAT } from '@/store/action-types/opened-chat'
+import { CLEAR_CHAT_LIST } from '@/store/action-types/chat-list'
 
 const actions = {
     [AUTH_REQUEST]: async ({ commit }) => {
@@ -59,9 +63,24 @@ const actions = {
             throw error
         }
     },
-    [CLEAR_ALL]: async ({ commit }) => {
+    [AUTH_LOGOUT_ALL_DEVICES]: async () => {
+        try {
+            await axios.get('/api/auth/logout-all-devices', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
+            localStorage.removeItem('token')
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    },
+    [CLEAR_ALL]: ({ commit }) => {
         try {
             commit(AUTH_LOGOUT_SUCCESS)
+            commit(`openedChat/${CLEAR_OPENED_CHAT}`, null, { root: true })
+            commit(`chatList/${CLEAR_CHAT_LIST}`, null, { root: true })
         } catch (error) {
             console.log(error)
             throw error
