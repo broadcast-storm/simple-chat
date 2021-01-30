@@ -1,5 +1,5 @@
 <template>
-    <div class="logo">
+    <div class="logo" @click="reload()">
         <LogoSvg class="logo__svg" />
         <p class="logo__text">
             <span class="logo__text__first-letter">S</span>imple
@@ -15,6 +15,11 @@ export default {
     components: { LogoSvg },
     data() {
         return {}
+    },
+    methods: {
+        reload() {
+            document.location.reload()
+        },
     },
 }
 </script>
