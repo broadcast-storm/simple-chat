@@ -7,7 +7,7 @@
         <template v-if="getOpenedChatId !== null">
             <b-card-header class="py-0 opened-header">
                 <div>
-                    <button class="back-btn" @click="changeChatId(null)">
+                    <button class="back-btn" @click="closeOpenedChat()">
                         <LeftArrowSvg class="back-btn__img" />
                     </button>
                     <b-avatar size="45px"></b-avatar>
@@ -28,22 +28,34 @@
                     <b-dropdown-item href="#">Заблокировать</b-dropdown-item>
                 </b-dropdown>
             </b-card-header>
-            <div class="messages-list">
-                <div class="yours messages">
-                    <div class="message last">
-                        <span class="text">Hello, how's it going?</span>
+            <div
+                class="messages-list"
+                :class="{
+                    'loading-list': isOpenedChatLoading,
+                }"
+            >
+                <template v-if="!isOpenedChatLoading">
+                    <div
+                        v-for="(message, index) in getMessagesList"
+                        :key="message._id"
+                        class="message"
+                        :class="{
+                            mine: message.userId === getUserMainInfo._id,
+                            yours: message.userId !== getUserMainInfo._id,
+                            last: checkIsMessageLast(index),
+                        }"
+                    >
+                        <span class="text">{{ message.text }}</span>
                         <span class="time">15:30</span>
                     </div>
-                </div>
-                <div class="mine messages">
-                    <div class="message last">
-                        <span class="text">
-                            How about you? How about you? How about you? How
-                            about you? How about you?
-                        </span>
-                        <span class="time">15:39</span>
-                    </div>
-                </div>
+                </template>
+                <b-spinner
+                    v-else
+                    label="Spinning"
+                    variant="primary"
+                    small
+                    class="ml-2"
+                ></b-spinner>
             </div>
             <b-form class="message-form">
                 <b-form-textarea
@@ -68,6 +80,7 @@
 <script>
 import { mapMutations, mapGetters } from 'vuex'
 import { OPENED_CHAT_ID_CHANGE } from '@/store/action-types/app-params'
+import { CLEAR_OPENED_CHAT } from '@/store/action-types/opened-chat'
 import LeftArrowSvg from '@/assets/icons/left-arrow.svg'
 import NoChatSvg from '@/assets/icons/chat.svg'
 
@@ -80,10 +93,30 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('userInfo', ['getUserMainInfo']),
         ...mapGetters('appParams', ['getOpenedChatId']),
+        ...mapGetters('openedChat', ['getMessagesList', 'isOpenedChatLoading']),
     },
     methods: {
         ...mapMutations('appParams', { changeChatId: OPENED_CHAT_ID_CHANGE }),
+        ...mapMutations('openedChat', { clearMessages: CLEAR_OPENED_CHAT }),
+        closeOpenedChat() {
+            this.clearMessages()
+            this.changeChatId(null)
+        },
+        checkIsMessageLast(index) {
+            if (
+                parseInt(index) + 1 <
+                Object.keys(this.getMessagesList).length
+            ) {
+                return (
+                    this.getMessagesList[parseInt(index) + 1].userId !==
+                    this.getMessagesList[parseInt(index)].userId
+                )
+            } else {
+                return true
+            }
+        },
     },
 }
 </script>
@@ -128,15 +161,12 @@ export default {
     .messages-list {
         height: 100%;
         overflow-y: scroll;
-        padding: 0 10px;
+        padding: 30px 10px 0px 10px;
         box-sizing: border-box;
         overflow-x: hidden;
-
-        .messages {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-        }
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
 
         .message {
             max-width: 80%;
@@ -153,15 +183,11 @@ export default {
         }
 
         .yours {
-            align-items: flex-start;
-        }
-
-        .yours .message {
             background-color: #eee;
             position: relative;
         }
 
-        .yours .message.last:before {
+        .yours.last:before {
             content: '';
             position: absolute;
             z-index: 0;
@@ -172,7 +198,7 @@ export default {
             background: #eee;
             border-bottom-right-radius: 15px;
         }
-        .yours .message.last:after {
+        .yours.last:after {
             content: '';
             position: absolute;
             z-index: 1;
@@ -185,17 +211,14 @@ export default {
         }
 
         .mine {
-            align-items: flex-end;
-        }
-
-        .mine .message {
             color: white;
             background: $basic-blue;
             background-attachment: fixed;
             position: relative;
+            margin-left: auto;
         }
 
-        .mine .message.last:before {
+        .mine.last:before {
             content: '';
             position: absolute;
             z-index: 0;
@@ -208,7 +231,7 @@ export default {
             border-bottom-left-radius: 15px;
         }
 
-        .mine .message.last:after {
+        .mine.last:after {
             content: '';
             position: absolute;
             z-index: 1;
@@ -219,6 +242,14 @@ export default {
             background: white;
             border-bottom-left-radius: 10px;
         }
+        .last {
+            margin-bottom: 30px;
+        }
+    }
+
+    .loading-list {
+        justify-content: center;
+        align-items: center;
     }
 
     .message-form {

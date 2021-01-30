@@ -1,5 +1,6 @@
 const state = {
-    accessToken: localStorage.getItem('token'),
+    userInfo: null,
+    isAuthentificated: false,
 }
 
 export default state

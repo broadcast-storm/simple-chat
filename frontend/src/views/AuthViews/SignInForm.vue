@@ -73,7 +73,8 @@
 <script>
 import routesList from '@/router/routesList'
 import { required, email } from 'vuelidate/lib/validators'
-import axios from 'axios'
+import { mapActions } from 'vuex'
+import { FIRST_AUTH_REQUEST } from '@/store/action-types/user-info'
 
 export default {
     name: 'SignInForm',
@@ -106,6 +107,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions('userInfo', [FIRST_AUTH_REQUEST]),
         countDownChanged(dismissCountDown) {
             this.dismissCountDown = dismissCountDown
         },
@@ -119,16 +121,16 @@ export default {
         async signin() {
             try {
                 this.isPending = true
-                const result = await axios.post('/api/auth/signIn', {
+                await this.FIRST_AUTH_REQUEST({
                     email: this.form.email,
                     password: this.form.password,
                 })
 
                 this.isPending = false
 
-                console.log(result)
-                localStorage.token = result.data.accessToken
-                this.$router.push(routesList.mainPage.path)
+                setTimeout(() => {
+                    this.$router.push(routesList.mainPage.path)
+                }, 500)
             } catch (error) {
                 this.isPending = false
                 this.dismissCountDown = this.dismissSecs

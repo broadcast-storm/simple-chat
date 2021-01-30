@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
+import { mapGetters, mapActions } from 'vuex'
+import { MESSAGES_REQUEST } from '@/store/action-types/opened-chat'
 import ChatList from '@/components/ChatList'
 import OpenedChat from '@/components/OpenedChat'
 
@@ -23,9 +23,15 @@ export default {
     props: {},
     computed: {
         ...mapGetters('appParams', ['getWindowWidth', 'getOpenedChatId']),
+        ...mapGetters('appParams', ['getOpenedChatId']),
     },
-    mounted() {
-        console.log(this.getWindowWidth)
+    watch: {
+        getOpenedChatId: async function (chatId) {
+            if (chatId !== null) await this.MESSAGES_REQUEST(chatId)
+        },
+    },
+    methods: {
+        ...mapActions('openedChat', [MESSAGES_REQUEST]),
     },
 }
 </script>

@@ -9,13 +9,17 @@
         >
         </b-img>
         <b-popover target="user-photo" triggers="click blur" placement="bottom">
-            <template #title>Никита Позд</template>
+            <template #title>{{
+                getUserMainInfo.name + ' ' + getUserMainInfo.surname
+            }}</template>
             <span>Выйти</span>
         </b-popover>
     </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     name: 'UserPhoto',
     components: {},
@@ -30,6 +34,9 @@ export default {
             },
             defaultImg: require('@/assets/images/profile-user.png'),
         }
+    },
+    computed: {
+        ...mapGetters('userInfo', ['getUserMainInfo']),
     },
 }
 </script>

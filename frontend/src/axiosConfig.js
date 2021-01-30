@@ -4,7 +4,8 @@ const AXIOS_YG_API = axios.create({
     timeout: 2000,
 })
 
-// if (getCookie('csrftoken') !== null)
-//     AXIOS_YG_API.defaults.headers['X-CSRFToken'] = getCookie('csrftoken')
+// if (localStorage.getItem('token') !== null)
+//     AXIOS_YG_API.defaults.headers['Authorization'] =
+//         'Bearer ' + localStorage.getItem('token')
 
 export { AXIOS_YG_API }

@@ -12,6 +12,9 @@
 import routesList from '@/router/routesList'
 import LoadingOverlay from '@/components/LoadingOverlay'
 import Navbar from '@/components/Navbar'
+import { mapActions, mapGetters } from 'vuex'
+import { AUTH_REQUEST } from '@/store/action-types/user-info'
+import { CHAT_LIST_REQUEST } from '@/store/action-types/chat-list'
 
 export default {
     name: 'Main',
@@ -22,14 +25,27 @@ export default {
             showOverlay: true,
         }
     },
-    mounted() {
-        setTimeout(() => {
-            if (!localStorage.token) {
+    computed: {
+        ...mapGetters('userInfo', ['getIsAuthentificated']),
+    },
+
+    async mounted() {
+        try {
+            if (!localStorage.getItem('token')) {
                 this.$router.push(routesList.authPage.children.signInPage)
             } else {
+                if (!this.getIsAuthentificated) await this.AUTH_REQUEST()
+                await this.CHAT_LIST_REQUEST()
                 this.showOverlay = false
             }
-        }, 1000)
+        } catch (error) {
+            console.log(error)
+            this.$router.push(routesList.authPage.children.signInPage)
+        }
+    },
+    methods: {
+        ...mapActions('userInfo', [AUTH_REQUEST]),
+        ...mapActions('chatList', [CHAT_LIST_REQUEST]),
     },
 }
 </script>
